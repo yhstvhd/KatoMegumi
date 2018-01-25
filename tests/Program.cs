@@ -47,18 +47,17 @@ class notfyicon : System.Windows.Forms.Form
 class InfomationCollections
 {
 	public List<string> Titles { get; set; }
-	public List<string> WeekDays { get; set; }
-	public List<string> StartTime { get; set; }	//後で日付と時間から自動変換させる（別クラスでやろう）
+	public List<DateTime> StartDayTimes{get;set;}
 	public List<string> OnAir { get; set; }
 }
+
 
 class Functions : InfomationCollections
 {
 	public Functions()
 	{
 		Titles = new List<string>();
-		WeekDays = new List<string>();
-		StartTime = new List<string>();
+		StartDayTimes = new List<DateTime>();
 		OnAir = new List<string>();
 	}
 	public void ReadFromTextFile()
@@ -74,14 +73,25 @@ class Functions : InfomationCollections
 			}
 		}
 		//TextFileAllReadの内容をInfomationCollectionsの各プロパティに選別、格納
-		for (int i = 0 ; i < TextFileAllRead.Count; i += 4)
+		for (int i = 0 ; i < TextFileAllRead.Count; i += 3)
 		{
 			Titles.Add(TextFileAllRead[i]);
-			WeekDays.Add(TextFileAllRead[i + 1]);
-			StartTime.Add(TextFileAllRead[i + 2]);
-			OnAir.Add(TextFileAllRead[i + 3]);
+			StartDayTimes.Add(ConvertDateTimeFromString(TextFileAllRead[i+1]));
+			OnAir.Add(TextFileAllRead[i + 2]);
 		}
 	}
+	//DateTime型に変換
+	DateTime ConvertDateTimeFromString(string DateTimeString)
+	{
+		//日本のカルチャを作成
+		CultureInfo JPCultureInfo = new CultureInfo("ja-JP", false);
+		//あとで色々なパターンを追加
+		DateTime ResultTime = DateTime.ParseExact
+			(DateTimeString,"M月d日(ddd)HH:mm～",JPCultureInfo,DateTimeStyles.None);
+		return ResultTime;
+	}
+	
+	
 	
 	//今日のアニメを選択
 	public InfomationCollections TodayList()
@@ -90,18 +100,16 @@ class Functions : InfomationCollections
 		
 		InfomationCollections ResultCollections = new InfomationCollections();
 		ResultCollections.Titles = new List<string>();
-		ResultCollections.WeekDays = new List<string>();
-		ResultCollections.StartTime = new List<string>();
+		ResultCollections.StartDayTimes = new List<DateTime>();
 		ResultCollections.OnAir= new List<string>();
 		
-		string TodayWeekDay = DateTime.Today.ToString("ddd", CultureInfo.CreateSpecificCulture("ja-JP"));	//今日の曜日を取得
+		DateTime TodayWeekDay = DateTime.Today;	//今日の曜日を取得
 		for(int i = 0 ; i < Titles.Count; i ++)
 		{
-			if(WeekDays[i] == TodayWeekDay)
+			if(StartDayTimes[i].DayOfWeek == TodayWeekDay.DayOfWeek)
 			{
 				ResultCollections.Titles.Add(Titles[i]);
-				ResultCollections.WeekDays.Add(WeekDays[i]);
-				ResultCollections.StartTime.Add(StartTime[i]);
+				ResultCollections.StartDayTimes.Add(StartDayTimes[i]);
 				ResultCollections.OnAir.Add(OnAir[i]);
 			}
 		}
@@ -121,12 +129,12 @@ class Functions : InfomationCollections
 	public void ShowResult()
 	{
 		//曜日にアニメがないとき
-		if(TodayList().StartTime.Count == 0)
+		if(TodayList().Titles.Count == 0)
 		{
 			return;//おしまい
 		}
 		
-		if(TodayList().StartTime[0] == DateTime.Now.ToString("HHmm"))
+		if(TodayList().StartDayTimes[0].TimeOfDay== DateTime.Now.TimeOfDay)
 		{
 			notfyicon.BalloonTipTitle = "まもなく放送開始です";
 			notfyicon.BalloonTipText = TodayList().Titles[0];
