@@ -62,7 +62,7 @@ class Functions : InfomationCollections
 	}
 	public void ReadFromTextFile()
 	{
-		string TextFileName = @"Resources\テストアニメ.txt";
+		string TextFileName = @"Resources\テストアニメ新書式.txt";
 		List<string> TextFileAllRead = new List<string>();
 		//テキストファイルの内容をTextFileAllReadに格納
 		using(StreamReader sReader = new StreamReader(TextFileName,Encoding.GetEncoding("Shift_JIS")))
@@ -91,8 +91,6 @@ class Functions : InfomationCollections
 		return ResultTime;
 	}
 	
-	
-	
 	//今日のアニメを選択
 	public InfomationCollections TodayList()
 	{
@@ -113,10 +111,11 @@ class Functions : InfomationCollections
 				ResultCollections.OnAir.Add(OnAir[i]);
 			}
 		}
-		
 		return ResultCollections;
 	}
-	//SelectTodayAnimeの結果を表示,時間になったらとかを後でやる
+	
+
+	//SelectTodayAnimeの結果
 	public System.Windows.Forms.NotifyIcon notfyicon = new System.Windows.Forms.NotifyIcon();
 	public void notfyicon_make()
 	{
@@ -134,7 +133,8 @@ class Functions : InfomationCollections
 			return;//おしまい
 		}
 		
-		if(TodayList().StartDayTimes[0].TimeOfDay== DateTime.Now.TimeOfDay)
+		//放送開始と今の時間が1000ミリ秒以下だったら＝放送開始時間だったら
+		if((TodayList().StartDayTimes[0].TimeOfDay-DateTime.Now.TimeOfDay).TotalMilliseconds < 1000)
 		{
 			notfyicon.BalloonTipTitle = "まもなく放送開始です";
 			notfyicon.BalloonTipText = TodayList().Titles[0];
