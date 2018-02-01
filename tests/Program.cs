@@ -114,7 +114,12 @@ class Functions : InfomationCollections
 		return ResultCollections;
 	}
 	
-
+	//今日の放送話を算出
+	public int TodayOnAirEpisode(DateTime _datetime)
+	{
+		return (int)(((DateTime.Now - _datetime).TotalDays)/7);
+	}
+	
 	//SelectTodayAnimeの結果
 	public System.Windows.Forms.NotifyIcon notfyicon = new System.Windows.Forms.NotifyIcon();
 	public void notfyicon_make()
@@ -137,7 +142,8 @@ class Functions : InfomationCollections
 		if((TodayList().StartDayTimes[0].TimeOfDay-DateTime.Now.TimeOfDay).TotalMilliseconds < 1000)
 		{
 			notfyicon.BalloonTipTitle = "まもなく放送開始です";
-			notfyicon.BalloonTipText = TodayList().Titles[0];
+			notfyicon.BalloonTipText = TodayList().Titles[0]+ "\n" +
+				"第" + TodayOnAirEpisode(TodayList().StartDayTimes[0]) + "話の放送です";
 			notfyicon.ShowBalloonTip(10000);
 		}
 
