@@ -69,16 +69,15 @@ namespace tests
 			List<string> TextFileAllRead = new List<string>();
 			Assembly _assembly = Assembly.GetExecutingAssembly();
 			//テキストファイルの内容をTextFileAllReadに格納
-			StreamReader _streamReader =
+			using(StreamReader _streamReader =
 				new StreamReader(_assembly.GetManifestResourceStream
-				                 (TextFileName),Encoding.GetEncoding("Shift_JIS"));
-
+			                       (TextFileName),Encoding.GetEncoding("Shift_JIS")))
+			{
 			while(_streamReader.Peek() >= 0)
 			{
 				TextFileAllRead.Add(_streamReader.ReadLine());
 			}
-			
-			_streamReader.Dispose();
+			}
 			//TextFileAllReadの内容をInfomationCollectionsの各プロパティに選別、格納
 			for (int i = 0 ; i < TextFileAllRead.Count; i += 3)
 			{
