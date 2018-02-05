@@ -130,8 +130,17 @@ namespace tests
 		public System.Windows.Forms.NotifyIcon notfyicon = new System.Windows.Forms.NotifyIcon();
 		public void notfyicon_make()
 		{
-			notfyicon.Icon = new Icon
-				(@"Resources\icon.ico");
+			//Iconをリソースから取得
+			Assembly _assembly = Assembly.GetExecutingAssembly();	//現在のアセンブリを取得
+			using(Stream Iconstream = _assembly.GetManifestResourceStream
+			      ("tests.Resources.icon.ico"))//リソースからicon.icoをストリーム
+			{
+				using(Bitmap Iconbitmap = new Bitmap(Iconstream))//Bitmapに変換
+				{
+					notfyicon.Icon = Icon.FromHandle(Iconbitmap.GetHicon());//BitmapのGDI+ハンドルからIcon作成
+				}
+			}
+			
 			notfyicon.Visible = true;
 			notfyicon.Text = "アニメスケジュール";
 		}
