@@ -158,7 +158,7 @@ namespace tests
 		//今日の放送話を算出
 		public int TodayOnAirEpisode(DateTime _datetime)
 		{
-			return (int)(((DateTime.Now - _datetime).TotalDays)/7);
+			return (int)(((DateTime.Now - _datetime).TotalDays)/7) + 1;
 		}
 		
 		//SelectTodayAnimeの結果
