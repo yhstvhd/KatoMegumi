@@ -89,13 +89,48 @@ namespace tests
 		//DateTime型に変換
 		DateTime ConvertDateTimeFromString(string DateTimeString)
 		{
-			//日本のカルチャを作成
+			
 			CultureInfo JPCultureInfo = new CultureInfo("ja-JP", false);
 			//あとで色々なパターンを追加
-			DateTime ResultTime = DateTime.ParseExact
-				(DateTimeString,"M月d日(ddd)HH:mm～",JPCultureInfo,DateTimeStyles.None);
+			DateTime ResultTime = ConvertDateTimeFromThirtyHours(DateTimeString);
 			return ResultTime;
 		}
+		
+		/// <summary>
+		/// 30時間表記の文字列を24時間表記のDateTimeに変換
+		/// </summary>
+		/// <param name="_datetimehour">日付と曜日、時間を表す文字列（一定の書式）</param>
+		/// <returns>24時間表記に直されたDatime</returns>
+		internal DateTime ConvertDateTimeFromThirtyHours(string _datetimehour)
+		{
+			//日本のカルチャを作成
+			CultureInfo JPCultureInfo = new CultureInfo("ja-JP", false);
+	
+			//テキストから日付部分だけ抽出
+			var datetime = DateTime.ParseExact
+				(Right(_datetimehour,9,_datetimehour.Length-9),"M月d日",JPCultureInfo);
+			
+			//テキストから30時間表記のものを抽出し、合算する
+			string time =Right(_datetimehour,1,5);
+			int hh = int.Parse(time.Substring(0,2));	//時間
+			int mm = int.Parse(time.Substring(3,2));	//分
+			var span = new TimeSpan(hh,mm,0);
+			return datetime.Add(span);
+		}
+		
+		/// <summary>
+		/// 文字列の末尾から文字を取り出す
+		/// </summary>
+		/// <param name="_string">文字列</param>
+		/// <param name="Start">末尾からの開始位置</param>
+		/// <param name="_length">長さ</param>
+		/// <returns>取り出した文字列</returns>
+		
+		internal static string Right(string _string, int Start, int _length)
+		{
+			return _string.Substring(_string.Length - _length - Start,_length);
+		}
+		
 		
 		//今日のアニメを選択
 		public InfomationCollections TodayList()
