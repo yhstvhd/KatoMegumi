@@ -188,6 +188,8 @@ namespace tests
 				return;//おしまい
 			}
 			
+			PreMesse(TodayList().StartDayTimes[0]);
+			
 			//放送開始と今の時間が1000ミリ秒以下だったら＝放送開始時間だったら
 			if((TodayList().StartDayTimes[0].TimeOfDay-DateTime.Now.TimeOfDay).TotalMilliseconds < 1000)
 			{
@@ -197,6 +199,16 @@ namespace tests
 				notfyicon.ShowBalloonTip(10000);
 			}
 
+		}
+		public void PreMesse(DateTime OAstart)
+		{
+			if((TodayList().StartDayTimes[0].TimeOfDay-DateTime.Now.TimeOfDay).TotalMilliseconds < 300000)
+			{
+				notfyicon.BalloonTipTitle = "放送開始です";
+				notfyicon.BalloonTipText = TodayList().Titles[0]+ "\n" +
+					"第" + TodayOnAirEpisode(TodayList().StartDayTimes[0]) + "話の放送です";
+				notfyicon.ShowBalloonTip(10000);
+			}
 		}
 	}
 }
